@@ -32,10 +32,8 @@ func TestApp_SimpleFlag(t *testing.T) {
 			switch value {
 			case "spanish":
 				result = c.Print("Hola", name)
-				break
 			default:
 				result = c.Print("Hello", name)
-				break
 			}
 
 			return nil
