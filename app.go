@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// App is the main structure of a cli application
 type App struct {
 	App      *cli.App
 	Action   CommandAction
@@ -13,6 +14,7 @@ type App struct {
 	commands []*Command
 }
 
+// NewApp creates a new cli Application with Name and Version
 func NewApp(name, version string) *App {
 	a := cli.NewApp()
 	a.Name = name
@@ -22,6 +24,7 @@ func NewApp(name, version string) *App {
 	}
 }
 
+// register get App After the registration
 func (app *App) register() *App {
 	// define default App.Action if it`s nil
 	if app.Action == nil {
@@ -78,6 +81,7 @@ func (a *App) Version() string {
 	return a.App.Version
 }
 
+// Run is the entry point to the cli app
 func (a *App) Run(arguments []string) error {
 	return a.register().App.Run(arguments)
 }
@@ -86,20 +90,24 @@ func (a *App) RunOSArgs() error {
 	return a.Run(os.Args)
 }
 
+// AddFlag add a Flag to list of Flags
 func (a *App) AddFlag(f Flag) {
 	a.flags = append(a.flags, &f)
 }
 
+// AddFlag add an array of Flags to list of Flags
 func (a *App) AddFlags(fs []Flag) {
 	for _, f := range fs {
 		a.AddFlag(f)
 	}
 }
 
+// AddCommand add a child Command to list of child Commands
 func (a *App) AddCommand(c Command) {
 	a.commands = append(a.commands, &c)
 }
 
+// AddCommands add an array of child Commands to list of child Commands
 func (a *App) AddCommands(cs []Command) {
 	for _, c := range cs {
 		a.AddCommand(c)

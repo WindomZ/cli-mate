@@ -1,11 +1,11 @@
 package cli_mate
 
-import (
-	"github.com/urfave/cli"
-)
+import "github.com/urfave/cli"
 
+// CommandAction the function for Command action
 type CommandAction func(c *Context) ExitCoder
 
+// Command is a subcommand for a cli.App
 type Command struct {
 	Command     cli.Command
 	Action      CommandAction
@@ -14,6 +14,7 @@ type Command struct {
 	subCommands []*Command
 }
 
+// register get Command After the registration
 func (cmd *Command) register() *Command {
 	// define default Command.Action if it`s nil
 	if cmd.Action == nil {
@@ -60,22 +61,24 @@ func (cmd *Command) register() *Command {
 	return cmd
 }
 
+// AddFlag add a Flag to list of Flags
 func (c *Command) AddFlag(f Flag) {
 	c.flags = append(c.flags, &f)
 }
 
+// AddFlag add an array of Flags to list of Flags
 func (c *Command) AddFlags(fs []Flag) {
 	for _, f := range fs {
 		c.AddFlag(f)
 	}
 }
 
-// AddSubCommand add a child command to list of child commands
+// AddSubCommand add a child Command to list of child Commands
 func (c *Command) AddSubCommand(cmd Command) {
 	c.subCommands = append(c.subCommands, &cmd)
 }
 
-// AddSubCommand add an array of child command to list of child commands
+// AddSubCommand add an array of child Commands to list of child Commands
 func (c *Command) AddSubCommands(cmds []Command) {
 	for _, cmd := range cmds {
 		c.AddSubCommand(cmd)
