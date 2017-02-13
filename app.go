@@ -86,6 +86,7 @@ func (a *App) Run(arguments []string) error {
 	return a.register().App.Run(arguments)
 }
 
+// RunOSArgs same as Run with arguments from os
 func (a *App) RunOSArgs() error {
 	return a.Run(os.Args)
 }
@@ -95,7 +96,7 @@ func (a *App) AddFlag(f Flag) {
 	a.flags = append(a.flags, &f)
 }
 
-// AddFlag add an array of Flags to list of Flags
+// AddFlags add an array of Flags to list of Flags
 func (a *App) AddFlags(fs []Flag) {
 	for _, f := range fs {
 		a.AddFlag(f)

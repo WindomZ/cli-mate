@@ -66,7 +66,7 @@ func (c *Command) AddFlag(f Flag) {
 	c.flags = append(c.flags, &f)
 }
 
-// AddFlag add an array of Flags to list of Flags
+// AddFlags add an array of Flags to list of Flags
 func (c *Command) AddFlags(fs []Flag) {
 	for _, f := range fs {
 		c.AddFlag(f)
@@ -78,7 +78,7 @@ func (c *Command) AddSubCommand(cmd Command) {
 	c.subCommands = append(c.subCommands, &cmd)
 }
 
-// AddSubCommand add an array of child Commands to list of child Commands
+// AddSubCommands add an array of child Commands to list of child Commands
 func (c *Command) AddSubCommands(cmds []Command) {
 	for _, cmd := range cmds {
 		c.AddSubCommand(cmd)
