@@ -23,7 +23,6 @@ func (cmd *Command) register() *Command {
 	}
 	// define default Command.action
 	cmd.action = func(c *Context) ExitCoder {
-		println("Command.action")
 		for _, f := range cmd.flags {
 			if err := f.Action(c, f); err != nil {
 				if err.IsBreak() {
@@ -40,7 +39,6 @@ func (cmd *Command) register() *Command {
 	}
 	// Command.action adapter cli.Command.Action
 	cmd.Command.Action = func(c *cli.Context) error {
-		println("Command.Command.Action")
 		if err := cmd.action(NewContext(c)); err != nil {
 			return err.GetError()
 		}
@@ -48,13 +46,13 @@ func (cmd *Command) register() *Command {
 	}
 
 	// register cli.Command.Flags
-	cmd.Command.Flags = make([]cli.Flag, len(cmd.flags))
+	cmd.Command.Flags = make([]cli.Flag, 0, len(cmd.flags))
 	for _, f := range cmd.flags {
 		cmd.Command.Flags = append(cmd.Command.Flags, f.register().Flag)
 	}
 
 	// register cli.Command.Subcommands
-	cmd.Command.Subcommands = make(cli.Commands, len(cmd.subCommands))
+	cmd.Command.Subcommands = make(cli.Commands, 0, len(cmd.subCommands))
 	for _, c := range cmd.subCommands {
 		cmd.Command.Subcommands = append(cmd.Command.Subcommands, c.register().Command)
 	}

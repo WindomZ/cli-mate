@@ -56,13 +56,13 @@ func (app *App) register() *App {
 	}
 
 	// register cli.App.Flags
-	app.App.Flags = make([]cli.Flag, len(app.flags))
+	app.App.Flags = make([]cli.Flag, 0, len(app.flags))
 	for _, f := range app.flags {
 		app.App.Flags = append(app.App.Flags, f.register().Flag)
 	}
 
 	// register cli.App.Commands
-	app.App.Commands = make([]cli.Command, len(app.commands))
+	app.App.Commands = make([]cli.Command, 0, len(app.commands))
 	for _, c := range app.commands {
 		app.App.Commands = append(app.App.Commands, c.register().Command)
 	}

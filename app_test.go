@@ -1,7 +1,6 @@
 package cli_mate
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli"
 	"testing"
@@ -21,12 +20,10 @@ var (
 		},
 		FlagName: "lang",
 		Action: func(c *Context, f *Flag) ExitCoder {
-			println("flag_lang:", fmt.Sprintf("%#v", c.Args()))
 			value := c.String(f.GetName())
 			if len(value) == 0 {
 				return nil
 			}
-			println("flag_lang:", value)
 
 			name := "Null"
 			if c.NArg() > 0 {
@@ -35,11 +32,11 @@ var (
 
 			switch value {
 			case "spanish":
-				result = c.Print("Hola", name)
+				result = c.Sprint("Hola", name)
 			case "chinese":
-				result = c.Print("你好", name)
+				result = c.Sprint("你好", name)
 			default:
-				result = c.Print("Hello", name)
+				result = c.Sprint("Hello", name)
 			}
 
 			return nil
@@ -53,8 +50,7 @@ var (
 			Usage:   "add a task to the list",
 		},
 		Action: func(c *Context) ExitCoder {
-			println("command_add:", fmt.Sprintf("%#v", c.Args()))
-			result = c.Print("Added:", c.Args().First())
+			result = c.Sprint("Added:", c.Args().First())
 			return nil
 		},
 	}
@@ -66,8 +62,6 @@ func TestApp_NewApp(t *testing.T) {
 }
 
 func TestApp_SimpleFlag(t *testing.T) {
-	TestApp_NewApp(t)
-
 	app.AddFlag(flag_lang)
 
 	app.Run([]string{app.Name(), "-lang", "english", "world"})
@@ -75,15 +69,15 @@ func TestApp_SimpleFlag(t *testing.T) {
 }
 
 func TestApp_SimpleCommand(t *testing.T) {
-	TestApp_NewApp(t)
-
+	command_add.AddFlag(flag_lang)
 	app.AddCommand(command_add)
+
+	app.Run([]string{app.Name(), "-lang", "english", "world"})
+	assert.Equal(t, result, "Hello world")
 
 	app.Run([]string{app.Name(), "add", "codes"})
 	assert.Equal(t, result, "Added: codes")
 
-	//command_add.AddFlag(flag_lang)
-	//
-	//app.Run([]string{"", "add", "world", "-lang", "english", "world"})
-	//assert.Equal(t, result, "Added: world")
+	app.Run([]string{"", "add", "world", "-lang", "english", "world"})
+	assert.Equal(t, result, "Added: world")
 }
