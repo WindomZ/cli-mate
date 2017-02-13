@@ -9,26 +9,30 @@ type App struct {
 	App      *cli.App
 	Action   CommandAction
 	action   CommandAction
-	flags    []Flag
-	commands []Command
+	flags    []*Flag
+	commands []*Command
 }
 
-func NewApp() *App {
+func NewApp(name, version string) *App {
+	a := cli.NewApp()
+	a.Name = name
+	a.Version = version
 	return &App{
-		App: cli.NewApp(),
+		App: a,
 	}
 }
 
-func (a *App) run() {
+func (app *App) register() *App {
 	// define default App.Action if it`s nil
-	if a.Action == nil {
-		a.Action = func(c *Context) ExitCoder {
+	if app.Action == nil {
+		app.Action = func(c *Context) ExitCoder {
 			return nil
 		}
 	}
+
 	// define default App.action
-	a.action = func(c *Context) ExitCoder {
-		for _, f := range a.flags {
+	app.action = func(c *Context) ExitCoder {
+		for _, f := range app.flags {
 			if err := f.Action(c, f); err != nil {
 				if err.IsBreak() {
 					break
@@ -36,27 +40,46 @@ func (a *App) run() {
 				return err
 			}
 		}
-		if a.Action == nil {
-		} else if err := a.Action(c); err != nil {
+		if app.Action == nil {
+		} else if err := app.Action(c); err != nil {
 			return err
 		}
 		return nil
 	}
+
 	// App.action adapter cli.App.Action
-	a.App.Action = func(c *cli.Context) error {
-		if err := a.action(NewContext(c)); err != nil {
+	app.App.Action = func(c *cli.Context) error {
+		if err := app.action(NewContext(c)); err != nil {
 			return err.GetError()
 		}
 		return nil
 	}
+
+	// register cli.App.Flags
+	app.App.Flags = make([]cli.Flag, len(app.flags))
+	for _, f := range app.flags {
+		app.App.Flags = append(app.App.Flags, f.register().Flag)
+	}
+
+	// register cli.App.Commands
+	app.App.Commands = make([]cli.Command, len(app.commands))
+	for _, c := range app.commands {
+		app.App.Commands = append(app.App.Commands, c.register().Command)
+	}
+
+	return app
+}
+
+func (a *App) Name() string {
+	return a.App.Name
+}
+
+func (a *App) Version() string {
+	return a.App.Version
 }
 
 func (a *App) Run(arguments []string) error {
-	a.run()
-	for _, c := range a.commands {
-		c.run()
-	}
-	return a.App.Run(arguments)
+	return a.register().App.Run(arguments)
 }
 
 func (a *App) RunOSArgs() error {
@@ -64,8 +87,7 @@ func (a *App) RunOSArgs() error {
 }
 
 func (a *App) AddFlag(f Flag) {
-	a.flags = append(a.flags, f)
-	a.App.Flags = append(a.App.Flags, f.Flag)
+	a.flags = append(a.flags, &f)
 }
 
 func (a *App) AddFlags(fs []Flag) {
@@ -75,8 +97,7 @@ func (a *App) AddFlags(fs []Flag) {
 }
 
 func (a *App) AddCommand(c Command) {
-	a.commands = append(a.commands, c)
-	a.App.Commands = append(a.App.Commands, c.Command)
+	a.commands = append(a.commands, &c)
 }
 
 func (a *App) AddCommands(cs []Command) {

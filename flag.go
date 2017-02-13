@@ -8,7 +8,7 @@ import (
 type Flag struct {
 	Flag     cli.Flag
 	FlagName string
-	Action   func(c *Context, f Flag) ExitCoder
+	Action   func(c *Context, f *Flag) ExitCoder
 }
 
 func (f *Flag) Apply(set *flag.FlagSet) {
@@ -17,4 +17,8 @@ func (f *Flag) Apply(set *flag.FlagSet) {
 
 func (f Flag) GetName() string {
 	return f.FlagName
+}
+
+func (f *Flag) register() *Flag {
+	return f
 }
