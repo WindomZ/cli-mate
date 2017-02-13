@@ -5,9 +5,15 @@ import (
 	"github.com/urfave/cli"
 )
 
+// BreakExit just for break action of command execute
+var BreakExit *ExitError = &ExitError{
+	ExitError: *cli.NewExitError("break", 0),
+}
+
 type ExitCoder interface {
 	cli.ExitCoder
 	GetError() error
+	IsBreak() bool
 }
 
 type ExitError struct {
@@ -33,4 +39,8 @@ func NewDefaultExitError(err error) *ExitError {
 
 func (e ExitError) GetError() error {
 	return errors.New(e.Error())
+}
+
+func (e ExitError) IsBreak() bool {
+	return e.ExitCode() == 0 && e.Error() == "break"
 }

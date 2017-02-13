@@ -2,45 +2,51 @@ package cli_mate
 
 import "github.com/urfave/cli"
 
+type CommandAction func(c *Context) ExitCoder
+
 type Command struct {
 	Command     cli.Command
-	Action      func(c *Context) ExitCoder
+	Action      CommandAction
+	action      CommandAction
 	flags       []Flag
-	SubCommands []Command
+	subCommands []Command
 }
 
-func NewCommand(cmd *cli.Command) (_cmd *Command) {
-	if cmd != nil {
-		_cmd = &Command{
-			Command: *cmd,
-		}
-	} else {
-		_cmd = &Command{}
-	}
-	// define Command.Action
-	_cmd.Action = func(c *Context) ExitCoder {
-		if _cmd.flags == nil {
+func (cmd *Command) run() {
+	// define default Command.Action if it`s nil
+	if cmd.Action == nil {
+		cmd.Action = func(c *Context) ExitCoder {
 			return nil
 		}
-		for _, f := range _cmd.flags {
+	}
+	// define default Command.action
+	cmd.action = func(c *Context) ExitCoder {
+		for _, f := range cmd.flags {
 			if err := f.Action(c, f); err != nil {
+				if err.IsBreak() {
+					break
+				}
 				return err
 			}
 		}
+		if cmd.Action == nil {
+		} else if err := cmd.Action(c); err != nil {
+			return err
+		}
 		return nil
 	}
-	// Command.Action adapter cli.Command.Action
-	_cmd.Command.Action = func(c *cli.Context) error {
-		if err := _cmd.Action(NewContext(c)); err != nil {
+	// Command.action adapter cli.Command.Action
+	cmd.Command.Action = func(c *cli.Context) error {
+		if err := cmd.action(NewContext(c)); err != nil {
 			return err.GetError()
 		}
 		return nil
 	}
-	return
 }
 
 func (c *Command) AddFlag(f Flag) {
 	c.flags = append(c.flags, f)
+	c.Command.Flags = append(c.Command.Flags, f.Flag)
 }
 
 func (c *Command) AddFlags(fs []Flag) {
@@ -51,16 +57,18 @@ func (c *Command) AddFlags(fs []Flag) {
 
 // AddSubCommand add a child command to list of child commands
 func (c *Command) AddSubCommand(cmd Command) {
-	c.SubCommands = append(c.SubCommands, cmd)
+	c.subCommands = append(c.subCommands, cmd)
+	c.Command.Subcommands = c.Command.Subcommands[:0]
+	c.Command.Subcommands = append(c.Command.Subcommands, c.getCliSubCommand()...)
 }
 
-// getSubCommand get list of child cli.commands
-func (c *Command) GetCliSubCommand() []cli.Command {
-	if c.SubCommands == nil || len(c.SubCommands) == 0 {
+// getCliSubCommand get list of child cli.commands
+func (c *Command) getCliSubCommand() []cli.Command {
+	if c.subCommands == nil || len(c.subCommands) == 0 {
 		return []cli.Command{}
 	}
-	cs := make([]cli.Command, 0, len(c.SubCommands))
-	for _, sub := range c.SubCommands {
+	cs := make([]cli.Command, 0, len(c.subCommands))
+	for _, sub := range c.subCommands {
 		cs = append(cs, sub.Command)
 	}
 	return cs

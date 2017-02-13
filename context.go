@@ -35,3 +35,15 @@ func (c *Context) Print(a ...interface{}) string {
 func (c *Context) Println(a ...interface{}) string {
 	return c.printlnFunc(a...)
 }
+
+func (c *Context) Sprint(a ...interface{}) string {
+	return strings.TrimSuffix(fmt.Sprintln(a...), "\n")
+}
+
+func (c *Context) Sprintln(a ...interface{}) string {
+	return fmt.Sprintln(a...)
+}
+
+func (c *Context) Sprintf(format string, a ...interface{}) string {
+	return fmt.Sprintf(format, a...)
+}
