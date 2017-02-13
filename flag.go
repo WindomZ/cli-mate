@@ -5,10 +5,12 @@ import (
 	"github.com/urfave/cli"
 )
 
+type FlagAction func(c *Context, f *Flag) ExitCoder
+
 type Flag struct {
 	Flag     cli.Flag
 	FlagName string
-	Action   func(c *Context, f *Flag) ExitCoder
+	Action   FlagAction
 }
 
 func (f *Flag) Apply(set *flag.FlagSet) {
