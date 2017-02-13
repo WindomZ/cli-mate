@@ -11,14 +11,14 @@ func TestApp_SimpleFlag(t *testing.T) {
 
 	app := NewApp()
 
-	app.AddFlag(&Flag{
+	app.AddFlag(Flag{
 		Flag: cli.StringFlag{
 			Name:  "lang",
 			Value: "english",
 			Usage: "language for the greeting",
 		},
 		FlagName: "lang",
-		Action: func(c *Context, f *Flag) ExitCoder {
+		Action: func(c *Context, f Flag) ExitCoder {
 			value := c.String(f.GetName())
 			if len(value) == 0 {
 				return nil
