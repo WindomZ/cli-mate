@@ -61,6 +61,11 @@ func (cmd *Command) register() *Command {
 	return cmd
 }
 
+// Name returns the full name of the command
+func (c Command) Name() string {
+	return c.Command.FullName()
+}
+
 // AddFlag add a Flag to list of Flags
 func (c *Command) AddFlag(f Flag) {
 	c.flags = append(c.flags, &f)

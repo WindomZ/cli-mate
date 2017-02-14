@@ -25,6 +25,11 @@ func (f Flag) GetName() string {
 	return f.FlagName
 }
 
+// Name same as GetName
+func (f Flag) Name() string {
+	return f.GetName()
+}
+
 // register get Flag After the registration
 func (f *Flag) register() *Flag {
 	return f
