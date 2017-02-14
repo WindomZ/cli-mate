@@ -114,3 +114,8 @@ func (a *App) AddCommands(cs []Command) {
 		a.AddCommand(c)
 	}
 }
+
+func (a *App) Clear() {
+	a.flags = a.flags[:0]
+	a.commands = a.commands[:0]
+}

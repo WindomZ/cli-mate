@@ -89,3 +89,8 @@ func (c *Command) AddSubCommands(cmds []Command) {
 		c.AddSubCommand(cmd)
 	}
 }
+
+func (c *Command) Clear() {
+	c.flags = c.flags[:0]
+	c.subCommands = c.subCommands[:0]
+}
