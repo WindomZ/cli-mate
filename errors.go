@@ -20,21 +20,23 @@ type ExitError struct {
 	cli.ExitError
 }
 
-// NewExitError makes a new *ExitError
-func NewExitError(err error, exitCode int) *ExitError {
+// NewExitError makes a new *ExitError with error and code
+func NewExitError(err error, exitCode ...int) *ExitError {
 	if err == nil {
-		return &ExitError{
-			ExitError: *cli.NewExitError("", exitCode),
-		}
+		return NewExitStringError("", exitCode...)
 	}
-	return &ExitError{
-		ExitError: *cli.NewExitError(err.Error(), exitCode),
-	}
+	return NewExitStringError(err.Error(), exitCode...)
 }
 
-// NewDefaultExitError makes a new *ExitError with no exit code
-func NewDefaultExitError(err error) *ExitError {
-	return NewExitError(err, 1)
+// NewExitStringError makes a new *ExitError with string and code
+func NewExitStringError(err string, exitCodes ...int) *ExitError {
+	var exitCode int = 1
+	if exitCodes != nil && len(exitCodes) != 0 {
+		exitCode = exitCodes[0]
+	}
+	return &ExitError{
+		ExitError: *cli.NewExitError(err, exitCode),
+	}
 }
 
 func (e ExitError) GetError() error {

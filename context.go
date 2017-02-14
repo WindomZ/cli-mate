@@ -21,7 +21,7 @@ func NewContext(c *cli.Context) *Context {
 			return s
 		},
 		printlnFunc: func(a ...interface{}) string {
-			s := fmt.Sprintln(a...)
+			s := strings.TrimSuffix(fmt.Sprintln(a...), "\n")
 			fmt.Println(s)
 			return s
 		},
@@ -46,4 +46,16 @@ func (c *Context) Sprintln(a ...interface{}) string {
 
 func (c *Context) Sprintf(format string, a ...interface{}) string {
 	return fmt.Sprintf(format, a...)
+}
+
+func (c *Context) ShowAppHelp() error {
+	return cli.ShowAppHelp(&c.Context)
+}
+
+func (c *Context) ShowCommandHelp(command string) error {
+	return cli.ShowCommandHelp(&c.Context, command)
+}
+
+func (c *Context) ShowSubcommandHelp() error {
+	return cli.ShowSubcommandHelp(&c.Context)
 }

@@ -69,7 +69,7 @@ var (
 )
 
 func TestApp_NewApp(t *testing.T) {
-	app = NewApp("wahaha", "0.0.1")
+	app = NewApp("wahaha", "just for testing", "0.0.1")
 	assert.NotNil(t, app)
 }
 

@@ -14,10 +14,11 @@ type App struct {
 	commands []*Command
 }
 
-// NewApp creates a new cli Application with Name and Version
-func NewApp(name, version string) *App {
+// NewApp creates a new cli Application with Name, Usage and Version
+func NewApp(name, usage, version string) *App {
 	a := cli.NewApp()
 	a.Name = name
+	a.Usage = usage
 	a.Version = version
 	return &App{
 		App: a,
