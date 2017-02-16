@@ -20,17 +20,8 @@ var (
 		},
 		FlagName: "lang",
 		Action: func(c *Context, f *Flag) ExitCoder {
-			value := c.String(f.Name())
-			if len(value) == 0 {
-				return nil
-			}
-
-			name := "Null"
-			if c.NArg() > 0 {
-				name = c.Args().Get(0)
-			}
-
-			switch value {
+			name := c.Args().First()
+			switch c.String(f.Name()) {
 			case "spanish":
 				result = c.Sprint("Hola", name)
 			case "chinese":
@@ -38,7 +29,6 @@ var (
 			default:
 				result = c.Sprint("Hello", name)
 			}
-
 			return nil
 		},
 	}
@@ -74,25 +64,18 @@ func TestApp_NewApp(t *testing.T) {
 }
 
 func TestApp_SimpleFlag(t *testing.T) {
-	app.AddFlag(flag_lang)
+	app.AddFlag(flag_lang) // add 'lang' flag to app
 
-	testApp_SimpleFlag(t)
-}
-
-func testApp_SimpleFlag(t *testing.T) {
 	app.Run([]string{app.Name(), "-lang", "english", "world"})
 	assert.Equal(t, result, "Hello world")
 }
 
 func TestApp_SimpleCommand(t *testing.T) {
-	command_add.AddFlag(flag_lang)
-	app.AddCommand(command_add)
+	command_add.AddFlag(flag_lang) // add 'lang' flag to 'add' command
+	app.AddCommand(command_add)    // add 'add' command to app
 
-	testApp_SimpleCommand(t)
-}
-
-func testApp_SimpleCommand(t *testing.T) {
-	testApp_SimpleFlag(t)
+	app.Run([]string{app.Name(), "-lang", "english", "world"})
+	assert.Equal(t, result, "Hello world")
 
 	app.Run([]string{app.Name(), "add", "codes"})
 	assert.Equal(t, result, "Added: codes")
@@ -104,16 +87,19 @@ func testApp_SimpleCommand(t *testing.T) {
 func TestApp_SimpleSubcommand(t *testing.T) {
 	app.Clear()
 
-	app.AddFlag(flag_lang)
+	app.AddFlag(flag_lang) // add 'lang' flag to app
 
-	command_add.AddSubCommand(command_remove)
-	app.AddCommand(command_add)
+	command_add.AddSubCommand(command_remove) // add 'remove' command to 'add' command
+	app.AddCommand(command_add)               // add 'add' command to app
 
-	testApp_SimpleSubcommand(t)
-}
+	app.Run([]string{app.Name(), "-lang", "english", "world"})
+	assert.Equal(t, result, "Hello world")
 
-func testApp_SimpleSubcommand(t *testing.T) {
-	testApp_SimpleCommand(t)
+	app.Run([]string{app.Name(), "add", "codes"})
+	assert.Equal(t, result, "Added: codes")
+
+	app.Run([]string{"", "add", "world", "-lang", "english", "world"})
+	assert.Equal(t, result, "Added: world")
 
 	app.Run([]string{"", "add", "remove", "world"})
 	assert.Equal(t, result, "Removed: world")

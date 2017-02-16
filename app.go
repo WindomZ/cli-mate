@@ -116,6 +116,7 @@ func (a *App) AddCommands(cs []Command) {
 	}
 }
 
+// Clear clear Commands and Flags to the initial state
 func (a *App) Clear() {
 	a.flags = a.flags[:0]
 	a.commands = a.commands[:0]
