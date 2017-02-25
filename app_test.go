@@ -72,7 +72,8 @@ func TestApp_SimpleFlag(t *testing.T) {
 
 func TestApp_SimpleCommand(t *testing.T) {
 	command_add.AddFlag(flag_lang) // add 'lang' flag to 'add' command
-	app.AddCommand(command_add)    // add 'add' command to app
+
+	app.AddCommand(command_add) // add 'add' command to app
 
 	app.Run([]string{app.Name(), "-lang", "english", "world"})
 	assert.Equal(t, result, "Hello world")
@@ -87,10 +88,9 @@ func TestApp_SimpleCommand(t *testing.T) {
 func TestApp_SimpleSubcommand(t *testing.T) {
 	app.Clear()
 
-	app.AddFlag(flag_lang) // add 'lang' flag to app
-
 	command_add.AddSubCommand(command_remove) // add 'remove' command to 'add' command
-	app.AddCommand(command_add)               // add 'add' command to app
+
+	app.AddFlag(flag_lang).AddCommand(command_add) // add 'lang' flag & 'add' command to app
 
 	app.Run([]string{app.Name(), "-lang", "english", "world"})
 	assert.Equal(t, result, "Hello world")

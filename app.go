@@ -93,27 +93,31 @@ func (a *App) RunOSArgs() error {
 }
 
 // AddFlag add a Flag to list of Flags
-func (a *App) AddFlag(f Flag) {
+func (a *App) AddFlag(f Flag) *App {
 	a.flags = append(a.flags, &f)
+	return a
 }
 
 // AddFlags add an array of Flags to list of Flags
-func (a *App) AddFlags(fs []Flag) {
+func (a *App) AddFlags(fs []Flag) *App {
 	for _, f := range fs {
 		a.AddFlag(f)
 	}
+	return a
 }
 
 // AddCommand add a child Command to list of child Commands
-func (a *App) AddCommand(c Command) {
+func (a *App) AddCommand(c Command) *App {
 	a.commands = append(a.commands, &c)
+	return a
 }
 
 // AddCommands add an array of child Commands to list of child Commands
-func (a *App) AddCommands(cs []Command) {
+func (a *App) AddCommands(cs []Command) *App {
 	for _, c := range cs {
 		a.AddCommand(c)
 	}
+	return a
 }
 
 // Clear clear Commands and Flags to the initial state
