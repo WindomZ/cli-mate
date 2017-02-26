@@ -3,3 +3,9 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 Base on [urfave/cli](https://github.com/urfave/cli)
+
+## Installation
+
+```bash
+go get github.com/WindomZ/cli-mate
+```
