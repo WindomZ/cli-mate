@@ -11,8 +11,9 @@ go:
   - 1.7.x
   - master
 
-before_script:
-  - go get -v github.com/urfave/cli || true
+before_install:
+  - go get github.com/urfave/cli
+  - go get github.com/stretchr/testify/assert
 
 script:
   - go test -v ./...
